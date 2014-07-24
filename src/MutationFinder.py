@@ -1,4 +1,11 @@
+''''
 
+author=Chase Smith
+date= July 23, 2014
+
+
+
+'''
 from Bio import SeqIO
 from Bio import Entrez
 from Bio.Seq import Seq 
@@ -642,15 +649,6 @@ class Excel(object):
 		
 		
 
-
-		
-		
-#ensembl=Excel(input_file='LT3 ALL 1678 204.txt', output_file='LT3 ALL 1678 204 SY.txt',  input_list= ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'], output_sheet='proteinFasta.txt', Ensembl=True)	
-#
-#ensembl.getEverything()
-
-#folder_name= "C:/Users/vpsmith/Downloads/Human Lung Mutation Files/LT3 and LT6 SNP files copy/LT3 and LT6 SNP files copy/*.*"
-#cycleThroughAllFiles(folder_name)
 
 
 

@@ -70,12 +70,10 @@ class ExcelInput(ttk.Frame):
         
         self.listVariables=[self.accession_col,self.ensembl_col, self.mutIndex_col,self.aChange_col, self.mutation_sequence, self.regular_sequence, self.mutSYSEQ, self.regSYSEQ, self.mutSYStrength, self.regSYStrength, self.protein_sequence]
         self.listLabels=["*Accession Id", "*Ensembl Id", "*Mutation Index", "*Amino Change", "Mutation Sequence", "Regular Sequence", "Mutation SY Sequence", "Regular SY Sequence", "Mutation SY Strength", "Regular SY Strength", "Protein Sequence"]
-        #self.initUI()
         self.runButton.pack(side=RIGHT, padx=5, pady=5, anchor=S)
         self.cancelButton.pack(side=BOTTOM, padx=5, pady=5, anchor=SE)
         self.ensembl.pack(side=BOTTOM, padx=5, pady=5, anchor=E)
         self.initUIListBoxExternals()
-        
         self.initUIListBox()
         
        
