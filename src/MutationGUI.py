@@ -130,10 +130,8 @@ class ExcelInput(ttk.Frame):
         + self.mutSYStrength.get()
         + self.regSYStrength.get()
         + self.protein_sequence.get())
-        print(self.geneType_col.get())
-        print(str(self.amerLengthDict[self.amerLength.get()]))
-        print(str(self.numSYReturns.get()))
         self.input_folderStr=self.input_folder.get()
+        self.runButton.config("disable")
         if(len(self.input_folderStr)<1):
             self.runButton.config("disable")
             self.output_fileStr=self.output_file.get()

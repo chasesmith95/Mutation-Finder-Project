@@ -6,6 +6,8 @@ date= July 23, 2014
 
 
 '''
+
+
 from Bio import SeqIO
 from Bio import Entrez
 from Bio.Seq import Seq 
@@ -20,7 +22,10 @@ from scipy import *
 from pyDOE.doe_factorial import *
 import os
 import glob
+#from mechanize import mechanize as mechanize
+#os.sys.path.append(mechanize)
 
+#from mechanize.mechanize import _mechanize as mechanize
 
 
 Entrez.email ="chase.smth@gmail.com"
@@ -328,6 +333,7 @@ class Excel(object):
 	def runExcel(self):
 		print(self.output_file)
 		print(self.output_file.find('txt'))
+		start=time.time()
 		Entrez.email ="chase.smth@gmail.com"
 		self.processMutationLists()
 		print("Writing to file.....")
@@ -341,12 +347,16 @@ class Excel(object):
 			else:
 				print("Unknown")
 				self.csvWrite(0)
+				end=time.time()-start
+				print(end)
 		except:
+			print("writing to csv")
 			self.csvWrite(0)
-			
+			end=time.time()-start
+			print((end))
 	def lookUpEnsemblProtein(self, k):
 		i=k
-		print(self.EnsemblId[i])
+		#print(self.EnsemblId[i])
 		Query="http://www.uniprot.org/uniprot/?query=" + str((self.EnsemblId)[i]) + "&sort=score"
 		response = urllib.request.Request(Query)
 		html = (urllib.request.urlopen(response))
@@ -380,7 +390,7 @@ class Excel(object):
 				finalString= finalString + str(lines)
 		finalString=finalString.replace(' ', '')
 		#print(finalString[0:int(len(finalString)/2)])
-		print(finalString)
+		#print(finalString)
 		self.proteinSeq.append(finalString)
 		return
 		
@@ -404,7 +414,7 @@ class Excel(object):
 				if(sequenceData[0]["GBSeq_feature-table"][l]['GBFeature_quals'][j]['GBQualifier_name']=='translation'):
 					tempProtein= sequenceData[0]["GBSeq_feature-table"][l]['GBFeature_quals'][j]['GBQualifier_value']
 					self.proteinSeq.append(tempProtein)
-					print(tempProtein)
+					#print(tempProtein)
 				j=j+1
 			l=l+1
 		return
@@ -413,7 +423,7 @@ class Excel(object):
 		print("start...")
 		
 		merLength=int(self.amerLength)
-		print(merLength)
+		#print(merLength)
 		amerLength=int(merLength-1)
 		i=0
 		while(i<len(self.proteinSeq)):
@@ -437,57 +447,101 @@ class Excel(object):
 					sequenceProtein = str((self.proteinSeq)[i])
 					smallRegSeq=str(sequenceProtein[start:(int(float((self.mutIndex)[i]))-1)] + temp + sequenceProtein[int(float((self.mutIndex)[i])): end])
 					self.mutSeq.append(smallRegSeq)
-					print(self.EnsemblId[i] + "  " + smallRegSeq)
+					#print(self.EnsemblId[i] + "  " + smallRegSeq)
 				i=i+1
 			except:
 				i=i+1	
 	def getRegSeq(self):
+		print("start...")
 		merLength=int(self.amerLength)
 		amerLength=int(merLength-1)
 		i=0
-		while(i<len(self.proteinSeq)):
-			try:
-				if((self.proteinSeq)[i]=='-' or (self.proteinSeq)[i]=='' or (self.EnsemblId)[i]=='-'):
-					self.regSeq.append('-')
-				if(self.proteinSeq[i]!='-' and self.proteinSeq[i]!='' and self.EnsemblId[i]!='-'):
-					start=(int(float(self.mutIndex[i]))-int(amerLength))
-					end=(int(float(self.mutIndex[i])+int(merLength)))
-					if((int(float(self.mutIndex[i])))<=int(amerLength)):
-						start=0
-					if((len((self.proteinSeq)[i])-int(float((self.mutIndex)[i])))<=int(merLength)):
-						end=len((self.proteinSeq)[i])
-					sequenceProtein = str((self.proteinSeq)[i])
-					smallRgSeq=str(sequenceProtein[start:end])
-					self.regSeq.append(smallRgSeq)
-					print((self.EnsemblId)[i] + " " + smallRgSeq)
-				i=i+1
-			except:
-				i=i+1
+		if(self.Ensembl):
+			while(i<len(self.proteinSeq)):
+				try:
+					if((self.proteinSeq)[i]=='-' or (self.proteinSeq)[i]=='' or (self.EnsemblId)[i]=='-'):
+						self.regSeq.append('-')
+					if(self.proteinSeq[i]!='-' and self.proteinSeq[i]!='' and self.EnsemblId[i]!='-'):
+						start=(int(float(self.mutIndex[i]))-int(amerLength))
+						end=(int(float(self.mutIndex[i])+int(merLength)))
+						if((int(float(self.mutIndex[i])))<=int(amerLength)):
+							start=0
+						if((len((self.proteinSeq)[i])-int(float((self.mutIndex)[i])))<=int(merLength)):
+							end=len((self.proteinSeq)[i])
+						sequenceProtein = str((self.proteinSeq)[i])
+						smallRgSeq=str(sequenceProtein[start:end])
+						self.regSeq.append(smallRgSeq)
+						#print((self.EnsemblId)[i] + " " + smallRgSeq)
+					i=i+1
+				except:
+					i=i+1
+		elif(self.Ensembl==False):
+			while(i<len(self.proteinSeq)):
+				try:
+					if((self.proteinSeq)[i]=='-' or (self.proteinSeq)[i]=='' or (self.accessionId)[i]=='-'):
+						self.regSeq.append('-')
+					if(self.proteinSeq[i]!='-' and self.proteinSeq[i]!='' and self.accessionId[i]!='-'):
+						start=(int(float(self.mutIndex[i]))-int(amerLength))
+						end=(int(float(self.mutIndex[i])+int(merLength)))
+						if((int(float(self.mutIndex[i])))<=int(amerLength)):
+							start=0
+						if((len((self.proteinSeq)[i])-int(float((self.mutIndex)[i])))<=int(merLength)):
+							end=len((self.proteinSeq)[i])
+						sequenceProtein = str((self.proteinSeq)[i])
+						smallRgSeq=str(sequenceProtein[start:end])
+						self.regSeq.append(smallRgSeq)
+						#print((self.EnsemblId)[i] + " " + smallRgSeq)
+					i=i+1
+				except:
+					i=i+1
 		print("done")
 	
 	
 	def csvWrite(self, k):
-		k=k
-		csvoutfile=open((self.output_file), 'w',newline="") 	
-		filewriter=csv.writer(csvoutfile, delimiter='\t' )
-		filewriter.writerow(np.array(self.headerValues))
-		j=0
-		i=0
-		while j< len(self.EnsemblId):
-			while (i< len(list(self.mutSYSeq)[i]) and i<len(list(self.regSYSeq)[i])):
-				lines=[str(list(self.EnsemblId)[j]), str(list(self.mutIndex)[j]), str(list(self.aChange)[j]), str(list(self.mutSeq)[j]),
-				str(list(self.regSeq)[j]),
-				str(list(self.mutSYSeq)[j][i]),
-				str(list(self.regSYSeq)[j][i]),
-				str(list(self.mutSYStrength)[j][i]),
-				str(list(self.regSYStrength)[j][i]),
-				str(list(self.proteinSeq)[j])]
-				filewriter.writerow(lines)
-				lines=[]
-				i=i+1
+		if(self.Ensembl):
+			k=k
+			csvoutfile=open((self.output_file), 'w',newline="") 	
+			filewriter=csv.writer(csvoutfile, delimiter='\t' )
+			filewriter.writerow(np.array(self.headerValues))
+			j=0
 			i=0
-			j=j+1
-		csvoutfile.close()	
+			while j< len(self.EnsemblId):
+				while (i< len(list(self.mutSYSeq)[i]) and i<len(list(self.regSYSeq)[i])):
+					lines=[str(list(self.EnsemblId)[j]), str(list(self.mutIndex)[j]), str(list(self.aChange)[j]), str(list(self.mutSeq)[j]),
+					str(list(self.regSeq)[j]),
+					str(list(self.mutSYSeq)[j][i]),
+					str(list(self.regSYSeq)[j][i]),
+					str(list(self.mutSYStrength)[j][i]),
+					str(list(self.regSYStrength)[j][i]),
+					str(list(self.proteinSeq)[j])]
+					filewriter.writerow(lines)
+					lines=[]
+					i=i+1
+				i=0
+				j=j+1
+			csvoutfile.close()	
+		elif(self.Ensembl==False):
+			k=k
+			csvoutfile=open((self.output_file), 'w',newline="") 	
+			filewriter=csv.writer(csvoutfile, delimiter='\t' )
+			filewriter.writerow(np.array(self.headerValues))
+			j=0
+			i=0
+			while( j< len(self.accessionId)):
+				while (i< len(list(self.mutSYSeq)[j]) and i<len(list(self.regSYSeq)[j])):
+					lines=[str(list(self.accessionId)[j]), str(list(self.mutIndex)[j]), str(list(self.aChange)[j]), str(list(self.mutSeq)[j]),
+					str(list(self.regSeq)[j]),
+					str(list(self.mutSYSeq)[j][i]),
+					str(list(self.regSYSeq)[j][i]),
+					str(list(self.mutSYStrength)[j][i]),
+					str(list(self.regSYStrength)[j][i]),
+					str(list(self.proteinSeq)[j])]
+					filewriter.writerow(lines)
+					lines=[]
+					i=i+1
+				i=0
+				j=j+1
+			csvoutfile.close()
 		return
 		
 	
@@ -552,21 +606,26 @@ class Excel(object):
 		self.colWrite(self.regSYSeq, i, self.regSYSeq_col)	
 	
 	def mutSYFEITHIProcessing(self):
+		print("Mut SY")
 		i=0
 		j=0
 		merLength=int(self.amerLength)
 		while i< len(self.mutSeq):
-			if(str((self.mutSeq)[i])!='' and len(str(self.mutSeq[i]))>=merLength and (str(self.mutSeq[i]).find('?'))<0):
-				print(self.mutSeq[i])	
-				self.lookUpSYFEITHI((self.mutSeq[i]))
-				self.mutSYSeq.append((self.SYSeq))
-				self.mutSYStrength.append((self.SYStrength))
-				print("Done Mutation! with " + str(i))	
-			elif(str(self.mutSeq[i])=='-' or len(str(self.mutSeq[i]))<merLength):
-				self.mutSYSeq.append('-')
-				self.mutSYStrength.append('-')
-			i=i+1
-			j=j+1
+			try:
+				if(str((self.mutSeq)[i])!='' and len(str(self.mutSeq[i]))>=merLength and (str(self.mutSeq[i]).find('?'))<0):
+					print(self.mutSeq[i])	
+					self.lookUpSYFEITHI((self.mutSeq[i]))
+					self.mutSYSeq.append((self.SYSeq))
+					self.mutSYStrength.append((self.SYStrength))
+					print("Done Mutation! with " + str(i))	
+				elif(str(self.mutSeq[i])=='-' or len(str(self.mutSeq[i]))<merLength):
+					self.mutSYSeq.append('-')
+					self.mutSYStrength.append('-')
+				i=i+1
+				j=j+1
+			except:
+				i=i+1
+		print("done")
 		return 
 	
 	def regDuplicateSYFEITHIProcessing(self):
@@ -587,7 +646,7 @@ class Excel(object):
 					self.regSYStrength.append(self.SYStrength)
 					self.regSYSeq.append(self.SYSeq)
 					time.sleep(1)
-					print("Done! with " + str(i))
+					#print("Done! with " + str(i))
 			except ValueError:
 				i=i+1
 				j=j+1
@@ -600,24 +659,43 @@ class Excel(object):
 	
 	def regSYFEITHIProcessing(self):
 		#self.readInputAccessionId()
+		print("Reg SY")
 		merLength=int(self.amerLength)
 		i=0
 		writeLine=0
 		j=0
-		while i< len(self.regSeq):
-			if(str(self.regSeq[i])=='-' or len(str(self.regSeq[i]))<merLength):
-				self.regSYSeq.append('-')
-				self.regSYStrength.append('-')
-			elif(self.regSeq[i]!='' and len(str(self.regSeq[i]))>=merLength):
-				print("starting SYPFIETHI")
-				print(self.regSeq[i])	
-				self.lookUpSYFEITHI(self.regSeq[i])
-				self.regSYStrength.append((self.SYStrength))
-				self.regSYSeq.append((self.SYSeq))
-				print("Done! with " + str(i))	
-			i=i+1
-			j=j+1
+		try:
+			while i< len(self.regSeq):
+				if(str(self.regSeq[i])=='-' or len(str(self.regSeq[i]))<merLength):
+					self.regSYSeq.append('-')
+					self.regSYStrength.append('-')
+				elif(self.regSeq[i]!='' and len(str(self.regSeq[i]))>=merLength):
+					#print("starting SYPFIETHI")
+					#print(self.regSeq[i])	
+					self.lookUpSYFEITHI(self.regSeq[i])
+					self.regSYStrength.append((self.SYStrength))
+					self.regSYSeq.append((self.SYSeq))
+					#print("Done! with " + str(i))	
+				i=i+1
+				j=j+1
+		except:
+				i=i+1
+				j=j+1
+		print("done")
 		return 		
+
+	def lookUpNetCTLPan(self, sequ):
+		'''
+		browse= mechanize.Browser()
+		browse.set_all_readonly(False)    # allow everything to be written to
+		browse.set_handle_robots(False)   # ignore robots
+		browse.set_handle_refresh(False)  # can sometimes hang without this
+		browse.addheaders =  [('User-agent', 'Firefox')]
+		Query="http://www.cbs.dtu.dk/services/NetCTLpan/"
+		response = browse.open(Query)
+		'''
+		return
+
 	def lookUpSYFEITHI(self,sequ):
 		seqN=sequ
 		while True:
@@ -654,7 +732,7 @@ class Excel(object):
 					readText[i]=readText[i][2:]
 					syseq.append(readText[i][0])
 					systrength.append(readText[i][1])
-					print(readText[i])	
+					#print(readText[i])	
 					i=i+1
 				self.SYSeq=syseq
 				self.SYStrength=systrength
@@ -665,17 +743,23 @@ class Excel(object):
 		if(self.Ensembl):
 			self.readInputEnsembl()
 			i=0
-			j=0
+			k=-1
 			writeLine=1
 			try:
 				while (i<len((self.EnsemblId))):
 					if( str(self.aChange[i])!='-' and str(self.aChange[i])!=''):
-						print("Found One!" + str(i))
-						self.lookUpEnsemblProtein(i)
-						
+						#print("Found One!" + str(i))
+						if(i<1):
+							self.lookUpEnsemblProtein(i)
+						elif(self.EnsemblId[i]!= self.EnsemblId[k]):
+							self.lookUpEnsemblProtein(i)
+						elif(self.EnsemblId[i]== self.EnsemblId[k]):
+							protein=self.proteinSeq[k]
+							self.proteinSeq.append(protein)
 					elif( str(self.aChange[i])=='-' or str(self.aChange[i])==' '):
 						self.proteinSeq.append('-')
 					i=i+1
+					k=k+1
 				print("done with proteins")
 				if(str(self.amerLength)=='0'): 
 					for i in self.amerLengthList:
@@ -685,7 +769,7 @@ class Excel(object):
 						self.getRegSeq()
 						self.regSYFEITHIProcessing()
 				elif(str(self.amerLength)!='0'):	
-						print("getting mutations")
+						#print("getting mutations")
 						self.getRegSeq()
 						self.getMutSeq()
 						self.regSYFEITHIProcessing()
@@ -711,30 +795,37 @@ class Excel(object):
 			self.readInputAccessionId()
 			i=0
 			j=0
+			k=-1
 			writeLine=1
 			try:
 				
-				while self.accessionId[i]!=' ':
-					if(self.aChange[i]=='Amino acid change'):
-						self.proteinSeqWrite(writeLine)
+				while (self.accessionId[i]!=' ') and (self.accessionId[i])!='None':
 					if( self.aChange[i]!='-' and self.aChange[i]!=''):
-						print("Found One!" + str(i))
-						self.lookUpProtein(i)
-						i=i+1
-						j=j+1
-					if( self.aChange[i]=='-' or self.aChange[i]==' '):
+						#print("Found One!" + str(i))
+						if(i<1):
+							self.lookUpProtein(i)
+						elif(self.accessionId[i]!= self.accessionId[k]):
+							self.lookUpProtein(i)
+						elif(self.accessionId[i]== self.accessionId[k]):
+							protein=self.proteinSeq[k]
+							self.proteinSeq.append(protein)
+					elif( self.aChange[i]=='-' or self.aChange[i]==' '):
 						self.proteinSeq.append('-')
-						i=i+1
-						j=j+1		   	
+					i=i+1
+					k=k+1
+				print("done with proteins")		   	
 				self.getMutSeq()
-				self.mutSYFEITHIProcessing()
 				self.getRegSeq()
+				print("got mutations")
+				self.mutSYFEITHIProcessing()
 				self.regSYFEITHIProcessing()
+				print("Done with Processing")
 			except:
 				self.getMutSeq()
-				self.mutSYFEITHIProcessing()
 				self.getRegSeq()
 				self.regSYFEITHIProcessing()
+				self.mutSYFEITHIProcessing()
+				print("Done with Processing")
 				return
 				
 	def __init__(self, input_file=None,input_sheet=None, output_file=None, output_sheet=None, input_list=None, amerLength='9', geneType="HLA-A*02%3A01", numSY=1, Ensembl=False):
