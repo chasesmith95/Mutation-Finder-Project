@@ -22,7 +22,7 @@ from scipy import *
 from pyDOE.doe_factorial import *
 import os
 import glob
-#from mechanize import mechanize as mechanize
+from mechanicalsoup import * 
 #os.sys.path.append(mechanize)
 
 #from mechanize.mechanize import _mechanize as mechanize
@@ -685,15 +685,12 @@ class Excel(object):
 		return 		
 
 	def lookUpNetCTLPan(self, sequ):
-		'''
-		browse= mechanize.Browser()
-		browse.set_all_readonly(False)    # allow everything to be written to
-		browse.set_handle_robots(False)   # ignore robots
-		browse.set_handle_refresh(False)  # can sometimes hang without this
-		browse.addheaders =  [('User-agent', 'Firefox')]
+		
+		browse= Browser()
+	
 		Query="http://www.cbs.dtu.dk/services/NetCTLpan/"
-		response = browse.open(Query)
-		'''
+		net_page = browse.get(Query)
+		net_form= browse.select("")
 		return
 
 	def lookUpSYFEITHI(self,sequ):
@@ -873,7 +870,8 @@ class Excel(object):
 		
 		
 
-
+excel=Excel()
+excel.lookUpNetCTLPan("HEHFHDBSHFHDHSJ")
 
 
 		
