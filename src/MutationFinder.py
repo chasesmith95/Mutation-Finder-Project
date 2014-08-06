@@ -22,10 +22,7 @@ from scipy import *
 from pyDOE.doe_factorial import *
 import os
 import glob
-from mechanicalsoup import * 
-#os.sys.path.append(mechanize)
-
-#from mechanize.mechanize import _mechanize as mechanize
+from robobrowser import RoboBrowser
 
 
 Entrez.email ="chase.smth@gmail.com"
@@ -685,12 +682,34 @@ class Excel(object):
 		return 		
 
 	def lookUpNetCTLPan(self, sequ):
+		seq='>seq' + '\n'+ sequ
+		browser= RoboBrowser(user_agent='Mozilla/5.0', history=True)
+		browser.allow_redirects=True
+		browser.session.cookies
+		Query="http://tools.immuneepitope.org/stools/netchop/netchop.do?app=netchop"
+		browser.open(Query)
+		net_form= browser.get_form(action="upload-submit.do")
+		net_form
+		net_form['sequences'].value=seq
+		net_form['formtype'].value='netctlpan_select'
+		net_form['length'].value='9'
+		net_form['species'].value="human"
+		net_form['supertype'].value='A2'
+		net_form['allele'].value= "HLA-A02:01" #self.amerLength
+		print(net_form)
+		net_form.serialize()
+		net_form
 		
-		browse= Browser()
-	
-		Query="http://www.cbs.dtu.dk/services/NetCTLpan/"
-		net_page = browse.get(Query)
-		net_form= browse.select("")
+		browser.submit_form(net_form, submit="Submit")
+		browser
+		print(browser)
+		
+		
+		
+		
+		table_form=browser.get_form(action="tableViewctlpan.do?thePage=1")
+		print(table_form)
+		
 		return
 
 	def lookUpSYFEITHI(self,sequ):
@@ -870,8 +889,8 @@ class Excel(object):
 		
 		
 
-excel=Excel()
-excel.lookUpNetCTLPan("HEHFHDBSHFHDHSJ")
+excel=Excel(input_list=['A','B','C','A','B','C','A','B','C''A','B','C'])
+excel.lookUpNetCTLPan("RSLTPSSSRALSDSHRS")
 
 
 		
